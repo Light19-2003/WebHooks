@@ -50,18 +50,16 @@ app.post("/webhook", (req, res) => {
     ? changes[0].value.messages[0]
     : null;
 
-
-    if(status){
-console.log(` meassge status: ${status.id}
+  if (status) {
+    console.log(` meassge status: ${status.id}
    status : ${status.status}  
   
   `);
+  }
 
-    }
-
-    if(Meassge){
-console.log(Meassge)
-    }
+  if (Meassge) {
+    console.log(Meassge);
+  }
 
   console.log("📩 Received webhook event:");
   // console.log(JSON.stringify(req.body, null, 2));
@@ -75,7 +73,7 @@ async function SendMeasage(to, body) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.TOKEN}`, // Use correct variable name
+      Authorization: `Bearer EAALpAnFTtT0BPrrhf0caduNlzTodp2nqxDsayNkuSoeJdrgOZC3a8c4O4ngL6NMho6NNlNssAZCvvzFlCn2jvMxfwWdtly0JcxNflWP7P8YZA8oynZABwRWMesvdkaeAMzJTzV0xoPSzp4FwiOQRvS4M3yiTB1HBBhZBYuWedEz5ROE0YU1H91dfEAe3eLgXo3gZDZD `, // Use correct variable name
     },
 
     data: JSON.stringify({
