@@ -30,8 +30,41 @@ app.get("/webhook", (req, res) => {
 
 // ✅ Webhook receiving (POST)
 app.post("/webhook", (req, res) => {
+  const { entry } = req.body;
+
+  if (!entry || entry.length === 0) {
+    return res.status(400).send("invalid request");
+  }
+
+  const changes = [0].changes;
+
+  if (!changes || changes.length === 0) {
+    return res.status(400).send("Invaild request");
+  }
+
+  const status = changes[0].value.statuses
+    ? changes[0].value.statuses[0]
+    : null;
+
+  const Meassge = changes[0].value.messages
+    ? changes[0].value.messages[0]
+    : null;
+
+
+    if(status){
+console.log(` meassge status: ${status.id}
+   status : ${status.status}  
+  
+  `);
+
+    }
+
+    if(Meassge){
+console.log(Meassge)
+    }
+
   console.log("📩 Received webhook event:");
-  console.log(JSON.stringify(req.body, null, 2));
+  // console.log(JSON.stringify(req.body, null, 2));
 
   res.status(200).send("webhook received");
 });
