@@ -2,7 +2,7 @@ import expres from "express";
 
 import axios from "axios";
 
-const webhook_token = "light-token";
+const VERIFY_TOKEN = "light-token";
 
 const app = expres();
 
@@ -12,17 +12,17 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.get("/webHook", (req, res) => {
-  // console.log(req.query);
-
+app.get("/webhook", (req, res) => {
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
 
-  if (mode && token === webhook_token) {
-    res.statusCode(200).send(challenge);
+  if (mode === "subscribe" && token === VERIFY_TOKEN) {
+    console.log("✅ Webhook verified!");
+    return res.status(200).send(challenge);
   } else {
-    res.statusCode(400);
+    console.log("❌ Verification failed.");
+    return res.sendStatus(403);
   }
 });
 
