@@ -1,17 +1,17 @@
-import expres from "express";
-
+import express from "express";
 import axios from "axios";
 
 const VERIFY_TOKEN = "light-token";
+const app = express();
 
-const app = expres();
+app.use(express.json());
 
-app.use(expres.json());
-
+// Simple test route
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+// ✅ Webhook verification (GET)
 app.get("/webhook", (req, res) => {
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
@@ -26,14 +26,15 @@ app.get("/webhook", (req, res) => {
   }
 });
 
+// ✅ Webhook receiving (POST)
 app.post("/webhook", (req, res) => {
+  console.log("📩 Received webhook event:");
   console.log(JSON.stringify(req.body, null, 2));
 
   res.status(200).send("webhook received");
 });
 
 const port = 2003;
-
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`🚀 Server running on port ${port}`);
 });
