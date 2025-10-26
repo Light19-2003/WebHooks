@@ -26,7 +26,7 @@ app.get("/webhook", (req, res) => {
   }
 });
 
-app.post("/webhook", async (req, res) => {
+app.post("/webhook", (req, res) => {
   console.log(JSON.stringify(req.body, null, 2));
 
   res.status(200).send("webhook received");
