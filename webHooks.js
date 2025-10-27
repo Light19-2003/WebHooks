@@ -1,19 +1,18 @@
 import express from "express";
 import axios from "axios";
 import dotenv from "dotenv";
-const VERIFY_TOKEN = "light-token";
 
 dotenv.config();
-const app = express();
 
+const app = express();
 app.use(express.json());
 
-// Simple test route
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+const VERIFY_TOKEN = "light-token";
+const ACCESS_TOKEN =
+  "EAALpAnFTtT0BPrrhf0caduNlzTodp2nqxDsayNkuSoeJdrgOZC3a8c4O4ngL6NMho6NNlNssAZCvvzFlCn2jvMxfwWdtly0JcxNflWP7P8YZA8oynZABwRWMesvdkaeAMzJTzV0xoPSzp4FwiOQRvS4M3yiTB1HBBhZBYuWedEz5ROE0YU1H91dfEAe3eLgXo3gZDZD";
+const PHONE_NUMBER_ID = "788688991002351"; // replace with your number ID
 
-// ✅ Webhook verification (GET)
+// ✅ Verification
 app.get("/webhook", (req, res) => {
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
@@ -23,163 +22,109 @@ app.get("/webhook", (req, res) => {
     console.log("✅ Webhook verified!");
     return res.status(200).send(challenge);
   } else {
-    console.log("❌ Verification failed.");
     return res.sendStatus(403);
   }
 });
 
-// ✅ Webhook receiving (POST)
-app.post("/webhook", (req, res) => {
-  const { entry } = req.body;
+// ✅ Receiving messages
+app.post("/webhook", async (req, res) => {
+  try {
+    const changes = req.body.entry?.[0]?.changes?.[0];
+    const value = changes?.value;
+    const message = value?.messages?.[0];
+    const status = value?.statuses?.[0];
 
-  if (!entry || entry.length === 0) {
-    return res.status(400).send("invalid request");
-  }
+    if (status) {
+      console.log(`📩 Message status: ${status.status} for ID ${status.id}`);
+    }
 
-  const changes = [0].changes;
+    if (message) {
+      const from = message.from;
+      const msgBody = message.text?.body?.toLowerCase();
 
-  if (!changes || changes.length === 0) {
-    return res.status(400).send("Invaild request");
-  }
+      console.log(`💬 From: ${from}, Message: ${msgBody}`);
 
-  const status = changes[0].value.statuses
-    ? changes[0].value.statuses[0]
-    : null;
-
-  const Meassge = changes[0].value.messages
-    ? changes[0].value.messages[0]
-    : null;
-
-  if (status) {
-    console.log(` meassge status: ${status.id}
-   status : ${status.status}  
-  
-  `);
-  }
-
-  if (Meassge) {
-    console.log(Meassge);
-
-    if (Meassge.type === "text") {
-      if (Meassge.text.body.toLowerCase() === "hello") {
-        SendMeasage("917409814407", "Hello, light");
-
-        //  Replaymessage("917409814407", "Hello, light", Meassge.id);
+      if (msgBody === "hello") {
+        await SendMessage(from, "Hello, Light 👋");
+      } else if (msgBody === "list") {
+        await SendList(from);
+      } else {
+        await SendMessage(from, `You said: ${msgBody}`);
       }
     }
-    if (Meassge.type === "text") {
-      if (Meassge.text.body.toLowerCase() === "hello") {
-        SendMeasage("917409814407", "Hello, light");
-
-        //  Replaymessage("917409814407", "Hello, light", Meassge.id);
-      }
-
-      if (Meassge.text.body.toLowerCase() === "list") {
-        Sendlist(Meassge.form);
-
-        //  Replaymessage("917409814407", "Hello, light", Meassge.id);
-      }
-    }
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("❌ Error handling webhook:", error);
+    res.sendStatus(500);
   }
-
-  console.log("📩 Received webhook event:");
-  // console.log(JSON.stringify(req.body, null, 2));
-
-  res.status(200).send("webhook received");
 });
 
-async function SendMeasage(to, body) {
-  await axios({
-    url: "https://graph.facebook.com/v22.0/788688991002351/messages",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer EAALpAnFTtT0BPrrhf0caduNlzTodp2nqxDsayNkuSoeJdrgOZC3a8c4O4ngL6NMho6NNlNssAZCvvzFlCn2jvMxfwWdtly0JcxNflWP7P8YZA8oynZABwRWMesvdkaeAMzJTzV0xoPSzp4FwiOQRvS4M3yiTB1HBBhZBYuWedEz5ROE0YU1H91dfEAe3eLgXo3gZDZD `, // Use correct variable name
-    },
-
-    data: JSON.stringify({
-      messaging_product: "whatsapp",
-      to: to, // no "whatsapp:" prefix needed
-      type: "text",
-      text: {
-        body: body,
+// ✅ Send Text Message
+async function SendMessage(to, body) {
+  try {
+    await axios.post(
+      `https://graph.facebook.com/v22.0/${PHONE_NUMBER_ID}/messages`,
+      {
+        messaging_product: "whatsapp",
+        to,
+        type: "text",
+        text: { body },
       },
-    }),
-  });
+      {
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    console.error(
+      "❌ Error sending message:",
+      error.response?.data || error.message
+    );
+  }
 }
 
-async function Replaymessage(to, body, messageid) {
-  await axios({
-    url: "https://graph.facebook.com/v22.0/788688991002351/messages",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer EAALpAnFTtT0BPrrhf0caduNlzTodp2nqxDsayNkuSoeJdrgOZC3a8c4O4ngL6NMho6NNlNssAZCvvzFlCn2jvMxfwWdtly0JcxNflWP7P8YZA8oynZABwRWMesvdkaeAMzJTzV0xoPSzp4FwiOQRvS4M3yiTB1HBBhZBYuWedEz5ROE0YU1H91dfEAe3eLgXo3gZDZD `, // Use correct variable name
-    },
-
-    data: JSON.stringify({
-      messaging_product: "whatsapp",
-      to: to, // no "whatsapp:" prefix needed
-      type: "text",
-      text: {
-        body: body,
-      },
-      context: {
-        meassge_id: messageid,
-      },
-    }),
-  });
-}
-
-async function Sendlist(to) {
-  await axios({
-    url: "https://graph.facebook.com/v22.0/788688991002351/messages",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer EAALpAnFTtT0BPrrhf0caduNlzTodp2nqxDsayNkuSoeJdrgOZC3a8c4O4ngL6NMho6NNlNssAZCvvzFlCn2jvMxfwWdtly0JcxNflWP7P8YZA8oynZABwRWMesvdkaeAMzJTzV0xoPSzp4FwiOQRvS4M3yiTB1HBBhZBYuWedEz5ROE0YU1H91dfEAe3eLgXo3gZDZD `, // Use correct variable name
-    },
-
-    data: JSON.stringify({
-      messaging_product: "whatsapp",
-      to: to, // no "whatsapp:" prefix needed
-      type: "interactive",
-      interactive: {
-        type: "list",
-        body: {
-          text: "Hello, this is interactive list",
-        },
-        action: {
-          button: "Reply",
-          sections: [
-            {
-              title: "Section 1",
-              rows: [
-                {
-                  id: "1",
-                  title: "Option 1",
-                  description: "Description 1",
-                },
-                {
-                  id: "2",
-                  title: "Option 2",
-                  description: "Description 2",
-                },
-                {
-                  id: "3",
-                  title: "Option 3",
-                },
-              ],
-            },
-          ],
+// ✅ Send List Message
+async function SendList(to) {
+  try {
+    await axios.post(
+      `https://graph.facebook.com/v22.0/${PHONE_NUMBER_ID}/messages`,
+      {
+        messaging_product: "whatsapp",
+        to,
+        type: "interactive",
+        interactive: {
+          type: "list",
+          body: { text: "Choose an option 👇" },
+          action: {
+            button: "View options",
+            sections: [
+              {
+                title: "Menu",
+                rows: [
+                  { id: "1", title: "Option 1", description: "Description 1" },
+                  { id: "2", title: "Option 2", description: "Description 2" },
+                ],
+              },
+            ],
+          },
         },
       },
-    }),
-  });
+      {
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    console.error(
+      "❌ Error sending list:",
+      error.response?.data || error.message
+    );
+  }
 }
 
 const port = 2003;
-app.listen(port, () => {
-  console.log(`🚀 Server running on port ${port}`);
-  // SendMeasage("917409814407", "Hello, light");
-});
+app.listen(port, () => console.log(`🚀 Server running on port ${port}`));
