@@ -61,7 +61,7 @@ app.post("/webhook", (req, res) => {
     console.log(Meassge);
 
     if (Meassge.type === "text") {
-      if (message.text.body.toLowerCase() === "hello") {
+      if (Meassge.text.body.toLowerCase() === "hello") {
         SendMeasage("917409814407", "Hello, light");
 
         //  Replaymessage("917409814407", "Hello, light", Meassge.id);
@@ -113,6 +113,53 @@ async function Replaymessage(to, body, messageid) {
       },
       context: {
         meassge_id: messageid,
+      },
+    }),
+  });
+}
+
+async function Sendlist(to) {
+  await axios({
+    url: "https://graph.facebook.com/v22.0/788688991002351/messages",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer EAALpAnFTtT0BPrrhf0caduNlzTodp2nqxDsayNkuSoeJdrgOZC3a8c4O4ngL6NMho6NNlNssAZCvvzFlCn2jvMxfwWdtly0JcxNflWP7P8YZA8oynZABwRWMesvdkaeAMzJTzV0xoPSzp4FwiOQRvS4M3yiTB1HBBhZBYuWedEz5ROE0YU1H91dfEAe3eLgXo3gZDZD `, // Use correct variable name
+    },
+
+    data: JSON.stringify({
+      messaging_product: "whatsapp",
+      to: to, // no "whatsapp:" prefix needed
+      type: "interactive",
+      interactive: {
+        type: "list",
+        body: {
+          text: "Hello, this is interactive list",
+        },
+        action: {
+          button: "Reply",
+          sections: [
+            {
+              title: "Section 1",
+              rows: [
+                {
+                  id: "1",
+                  title: "Option 1",
+                  description: "Description 1",
+                },
+                {
+                  id: "2",
+                  title: "Option 2",
+                  description: "Description 2",
+                },
+                {
+                  id: "3",
+                  title: "Option 3",
+                },
+              ],
+            },
+          ],
+        },
       },
     }),
   });
