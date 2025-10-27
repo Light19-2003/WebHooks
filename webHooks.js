@@ -59,6 +59,12 @@ app.post("/webhook", (req, res) => {
 
   if (Meassge) {
     console.log(Meassge);
+
+    if (Meassge.type === "text") {
+      if (message.text.body.toLowerCase() === "hello") {
+        SendMeasage("917409814407", "Hello, light");
+      }
+    }
   }
 
   console.log("📩 Received webhook event:");
@@ -90,5 +96,5 @@ async function SendMeasage(to, body) {
 const port = 2003;
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
-  SendMeasage("917409814407", "Hello, light");
+  // SendMeasage("917409814407", "Hello, light");
 });
