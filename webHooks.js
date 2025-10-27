@@ -62,7 +62,9 @@ app.post("/webhook", (req, res) => {
 
     if (Meassge.type === "text") {
       if (message.text.body.toLowerCase() === "hello") {
-        SendMeasage("917409814407", "Hello, light");
+        // SendMeasage("917409814407", "Hello, light"); 
+
+           Replaymessage("917409814407", "Hello, light", Meassge.id);
       }
     }
   }
@@ -88,6 +90,29 @@ async function SendMeasage(to, body) {
       type: "text",
       text: {
         body: body,
+      },
+    }),
+  });
+}
+
+async function Replaymessage(to, body, messageid) {
+  await axios({
+    url: "https://graph.facebook.com/v22.0/788688991002351/messages",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer EAALpAnFTtT0BPrrhf0caduNlzTodp2nqxDsayNkuSoeJdrgOZC3a8c4O4ngL6NMho6NNlNssAZCvvzFlCn2jvMxfwWdtly0JcxNflWP7P8YZA8oynZABwRWMesvdkaeAMzJTzV0xoPSzp4FwiOQRvS4M3yiTB1HBBhZBYuWedEz5ROE0YU1H91dfEAe3eLgXo3gZDZD `, // Use correct variable name
+    },
+
+    data: JSON.stringify({
+      messaging_product: "whatsapp",
+      to: to, // no "whatsapp:" prefix needed
+      type: "text",
+      text: {
+        body: body,
+      },
+      context: {
+        meassge_id: messageid,
       },
     }),
   });
