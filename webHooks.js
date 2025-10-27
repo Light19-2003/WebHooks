@@ -62,9 +62,9 @@ app.post("/webhook", (req, res) => {
 
     if (Meassge.type === "text") {
       if (message.text.body.toLowerCase() === "hello") {
-        // SendMeasage("917409814407", "Hello, light"); 
+        SendMeasage("917409814407", "Hello, light");
 
-           Replaymessage("917409814407", "Hello, light", Meassge.id);
+        //  Replaymessage("917409814407", "Hello, light", Meassge.id);
       }
     }
   }
