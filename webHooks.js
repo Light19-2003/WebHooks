@@ -46,7 +46,7 @@ app.post("/webhook", async (req, res) => {
 
       if (msgBody === "hello") {
         await SendMessage(from, "Hello, Light 👋");
-      } else if (msgBody === "details") {
+      } else if (msgBody === "list") {
         await SendList(from);
       } else {
         await SendMessage(from, `You said: ${msgBody}`);
