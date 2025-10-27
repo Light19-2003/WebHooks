@@ -67,6 +67,19 @@ app.post("/webhook", (req, res) => {
         //  Replaymessage("917409814407", "Hello, light", Meassge.id);
       }
     }
+    if (Meassge.type === "text") {
+      if (Meassge.text.body.toLowerCase() === "hello") {
+        SendMeasage("917409814407", "Hello, light");
+
+        //  Replaymessage("917409814407", "Hello, light", Meassge.id);
+      }
+
+      if (Meassge.text.body.toLowerCase() === "list") {
+        Sendlist(Meassge.form);
+
+        //  Replaymessage("917409814407", "Hello, light", Meassge.id);
+      }
+    }
   }
 
   console.log("📩 Received webhook event:");
