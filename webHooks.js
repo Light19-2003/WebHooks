@@ -1,13 +1,14 @@
 import express from "express";
 import axios from "axios";
 import dotenv from "dotenv";
-
+import CreateMessage from "./contoller/messages.js";
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
 const VERIFY_TOKEN = "light-token";
+let messages = []; // temporary in-memory storage
 const ACCESS_TOKEN =
   "EAALpAnFTtT0BPrrhf0caduNlzTodp2nqxDsayNkuSoeJdrgOZC3a8c4O4ngL6NMho6NNlNssAZCvvzFlCn2jvMxfwWdtly0JcxNflWP7P8YZA8oynZABwRWMesvdkaeAMzJTzV0xoPSzp4FwiOQRvS4M3yiTB1HBBhZBYuWedEz5ROE0YU1H91dfEAe3eLgXo3gZDZD";
 const PHONE_NUMBER_ID = "788688991002351"; // replace with your number ID
@@ -43,6 +44,7 @@ app.post("/webhook", async (req, res) => {
       const msgBody = message.text?.body?.toLowerCase();
 
       console.log(`💬 From: ${from}, Message: ${msgBody}`);
+      messages.push({ from, msgBody, time: new Date() });
 
       if (msgBody === "hello") {
         await SendMessage(from, "Hello, Light 👋");
@@ -60,8 +62,27 @@ app.post("/webhook", async (req, res) => {
     res.sendStatus(500);
   }
 });
+app.post("/api/v1/send-message", async (req, res) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).send("Name is missing");
+  }
+
+  try {
+    const response = await CreateMessage(name); // your function that sends WhatsApp message
+    res.json(response); // send the API response back to client
+  } catch (error) {
+    console.error("❌ Error sending message:", error);
+    res.status(500).json({ error: "Error sending message" });
+  }
+});
 
 // ✅ Send Text Message
+app.get("/api/v1/messages", (req, res) => {
+  res.json(messages);
+});
+
 async function SendMessage(to, body) {
   try {
     await axios.post(
