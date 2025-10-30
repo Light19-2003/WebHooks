@@ -11,7 +11,7 @@ const VERIFY_TOKEN = "light-token";
 let messages = []; // temporary in-memory storage
 const ACCESS_TOKEN =
   "EAALpAnFTtT0BPrrhf0caduNlzTodp2nqxDsayNkuSoeJdrgOZC3a8c4O4ngL6NMho6NNlNssAZCvvzFlCn2jvMxfwWdtly0JcxNflWP7P8YZA8oynZABwRWMesvdkaeAMzJTzV0xoPSzp4FwiOQRvS4M3yiTB1HBBhZBYuWedEz5ROE0YU1H91dfEAe3eLgXo3gZDZD";
-const PHONE_NUMBER_ID = "788688991002351"; // replace with your number ID
+const PHONE_NUMBER_ID = "788688991002351"; // replace with your number ID 788688991002351
 
 // ✅ Verification
 app.get("/webhook", (req, res) => {

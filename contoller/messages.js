@@ -4,8 +4,7 @@ export const CreateMessage = async (name) => {
 
   try {
     const response = await fetch(
-      "https://graph.facebook.com/v22.0/767063276500816/messages",
-      
+      "https://graph.facebook.com/v22.0/788688991002351/messages",
 
       {
         method: "POST",
@@ -15,20 +14,20 @@ export const CreateMessage = async (name) => {
         },
         body: JSON.stringify({
           messaging_product: "whatsapp",
-          to: "917900936928",
+          to: "917409814407",
           type: "template",
           template: {
-            name: "hello_world", // replace with your template
+            name: "welcome", // replace with your template
             language: { code: "en_US" },
-            // components: [
-            //   {
-            //     type: "header",
+            components: [
+              {
+                type: "header",
 
-            //     parameters: [
-            //       { type: "text", text: name }, // body placeholder if any
-            //     ],
-            //   },
-            // ],
+                parameters: [
+                  { type: "text", text: name }, // body placeholder if any
+                ],
+              },
+            ],
           },
         }),
       }
