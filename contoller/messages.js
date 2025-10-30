@@ -10,7 +10,7 @@ export const CreateMessage = async (name) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.TOKEN}`,
+          Authorization: `Bearer EAALpAnFTtT0BPrrhf0caduNlzTodp2nqxDsayNkuSoeJdrgOZC3a8c4O4ngL6NMho6NNlNssAZCvvzFlCn2jvMxfwWdtly0JcxNflWP7P8YZA8oynZABwRWMesvdkaeAMzJTzV0xoPSzp4FwiOQRvS4M3yiTB1HBBhZBYuWedEz5ROE0YU1H91dfEAe3eLgXo3gZDZD`,
         },
         body: JSON.stringify({
           messaging_product: "whatsapp",
